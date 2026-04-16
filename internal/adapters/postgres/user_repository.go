@@ -13,10 +13,10 @@ import (
 
 type userModel struct {
 	ID        string    `gorm:"type:uuid;primaryKey"`
-	Name      string    `gorm:"type:text;not null"`
-	Email     string    `gorm:"type:text;not null;uniqueIndex"`
-	CreatedAt time.Time `gorm:"not null"`
-	UpdatedAt time.Time `gorm:"not null"`
+	Name      string    `gorm:"type:varchar(255);not null"`
+	Email     string    `gorm:"type:varchar(255);not null;uniqueIndex"`
+	CreatedAt time.Time `gorm:"not null;autoCreateTime"`
+	UpdatedAt time.Time `gorm:"not null;autoUpdateTime"`
 }
 
 func (userModel) TableName() string {

@@ -6,16 +6,16 @@ CRUD API assignment using **Go + Gin + Gorm**, with **unit tests**, **Postgres**
 
 The project follows Hexagonal Architecture:
 
-- `internal/domain` - entities and domain errors
-- `internal/ports` - contracts for use cases, repositories, and caches
+- `internal/domain` - pure entities and domain errors
+- `internal/ports` - interface contracts for services, repositories, and caches
 - `internal/application` - business logic and decorators (e.g., caching)
-- `internal/adapters/http` - Gin handlers, router, and middlewares
-- `internal/adapters/postgres` - Gorm-based persistence
-- `internal/adapters/redis` - Redis-based caching
-- `internal/config` - Type-safe environment configuration (caarlos0/env)
+- `internal/adapters/http` - Gin handlers, router, and middlewares (Request ID, Logging, Error handling)
+- `internal/adapters/postgres` - Gorm-based persistence with dedicated repository models
+- `internal/adapters/redis` - Redis-based caching implementation
+- `internal/config` - Type-safe environment configuration using `caarlos0/env`
 - `cmd/api` - dependency injection and application entry point
-- `tests/integration` - E2E tests using Testcontainers (Postgres)
-- `internal/db/migrate.go` - Database schema migrations
+- `tests/integration` - E2E tests using Testcontainers (Postgres + Redis)
+- `internal/db/migrate.go` - Database schema migrations logic
 
 ## Database design
 
@@ -24,10 +24,10 @@ This project implements CRUD for `users`.
 ### Table: `users`
 
 - `id` (UUID, PK)
-- `name` (TEXT, NOT NULL)
-- `email` (TEXT, NOT NULL, UNIQUE)
-- `created_at` (TIMESTAMPTZ)
-- `updated_at` (TIMESTAMPTZ)
+- `name` (VARCHAR(255), NOT NULL)
+- `email` (VARCHAR(255), NOT NULL, UNIQUE)
+- `created_at` (TIMESTAMPTZ, AUTO_CREATE_TIME)
+- `updated_at` (TIMESTAMPTZ, AUTO_UPDATE_TIME)
 
 Gorm auto-migrates this schema at startup (see `internal/db/migrate.go`).
 
@@ -79,15 +79,14 @@ The project includes a `Makefile` for common tasks:
 
 ## Run locally (no Docker)
 
-Set a Postgres DSN, then:
+Ensure you have Postgres and Redis running, then set the `DATABASE_DSN` and `REDIS_ADDR` environment variables (or create a `.env` file):
 
 ```bash
-# Using Go directly
-go test ./...
-go run ./cmd/api
-
-# Using Makefile
+# Setup
+make tools
 make tidy
+
+# Run
 go run ./cmd/api
 ```
 
@@ -95,7 +94,7 @@ go run ./cmd/api
 
 ```bash
 # Using Docker directly
-docker compose up --build
+docker compose up --build -d
 
 # Using Makefile
 make docker-up
@@ -105,7 +104,7 @@ API runs on `http://localhost:8080`.
 
 ## Unit tests
 
-Tests use **Testify Suites** and **Mockery** for fast, hermetic testing of the application logic and HTTP handlers.
+Unit tests use **Testify Suites** and **Mockery** for fast, hermetic testing of the application logic and HTTP handlers.
 
 ```bash
 # Using Go directly
@@ -117,7 +116,7 @@ make test-unit
 
 ## Integration tests
 
-Integration tests use **Testcontainers** to spin up a real Postgres instance for E2E validation of the persistence layer and API.
+Integration tests use **Testcontainers** to spin up real Postgres and Redis instances for E2E validation of the entire stack.
 
 ```bash
 # Using Go directly
