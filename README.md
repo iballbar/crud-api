@@ -1,4 +1,4 @@
-# testarise
+# crud-api
 
 CRUD API assignment using **Go + Gin + Gorm**, with **unit tests**, **Postgres**, and **Docker Compose**.
 

@@ -9,22 +9,22 @@ import (
 )
 
 type Config struct {
-	AppEnv  string `env:"APP_ENV" envDefault:"development"`
-	Port    string `env:"PORT" envDefault:"8080"`
-	DB      DBConfig
-	Redis   RedisConfig
+	AppEnv string `env:"APP_ENV" envDefault:"development"`
+	Port   string `env:"PORT" envDefault:"8080"`
+	DB     DBConfig
+	Redis  RedisConfig
 }
 
 type DBConfig struct {
-	DSN             string        `env:"DATABASE_DSN" envDefault:"host=localhost user=postgres password=postgres dbname=testarise port=5432 sslmode=disable TimeZone=UTC"`
+	DSN             string        `env:"DATABASE_DSN" envDefault:"host=localhost user=postgres password=postgres dbname=users port=5432 sslmode=disable TimeZone=UTC"`
 	MaxOpenConns    int           `env:"DB_MAX_OPEN_CONNS" envDefault:"25"`
 	MaxIdleConns    int           `env:"DB_MAX_IDLE_CONNS" envDefault:"25"`
 	ConnMaxLifetime time.Duration `env:"DB_CONN_MAX_LIFETIME" envDefault:"30m"`
 }
 
 type RedisConfig struct {
-	Addr     string        `env:"REDIS_ADDR"`
-	UserTTL  time.Duration `env:"REDIS_USER_TTL" envDefault:"30s"`
+	Addr    string        `env:"REDIS_ADDR" envDefault:"localhost:6379"`
+	UserTTL time.Duration `env:"REDIS_USER_TTL" envDefault:"30s"`
 }
 
 func Load() (*Config, error) {
